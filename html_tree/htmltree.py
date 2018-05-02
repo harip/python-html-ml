@@ -4,6 +4,7 @@ from queue  import Queue
 import uuid
 from stack import Stack
 from collections import OrderedDict
+from pprint import pprint
 
 class HtmlNodeInfo:
     def __init__(self,key,index,data):
@@ -50,8 +51,6 @@ parser = MyHTMLParser(mappings,0)
 parser.feed(dom.text)
 
 elements=parser.get_elements()
-# print(elements)
-
 final_list=[]
 stack=Stack()
 for elem in elements:
@@ -69,11 +68,13 @@ for elem in elements:
 
         # Get the parent id
         parent_index=pop_elem.index-2
+        parent_elem=elements[parent_index]
 
         key=f'{pop_elem.key}{elem.key}'
-        node=HtmlNode(key,data_node.data,pop_elem.index,parent_index)  
+        node=HtmlNode(key,data_node.data,parent_elem.index,parent_index)  
         final_list.append(node)
 
-print(final_list)
+for item in final_list:
+    pprint( str(item.id) + "," + str(item.parent_id) + "," + item.start )
 
 
