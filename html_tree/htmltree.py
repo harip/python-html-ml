@@ -30,7 +30,7 @@ class MyHTMLParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         key=f'<{tag}'
         self.elements.append( HtmlNodeInfo(key,self.node_id,None))
-        print("Encountered a start tag:" + tag + "," + str(self.node_id))
+        # print("Encountered a start tag:" + tag + "," + str(self.node_id))
         self.node_id=self.node_id+1
 
         if (    tag.lower()=="link" or 
@@ -40,22 +40,22 @@ class MyHTMLParser(HTMLParser):
                 tag.lower()=="input"
         ):
             #There is no end, so lets add one
-            key=f'>{tag}'
+            key=f'>'
             self.elements.append( HtmlNodeInfo(key,self.node_id,None))
-            print("Encountered a end tag:" + tag + "," + str(self.node_id))
+            # print("Encountered a end tag:" + tag + "," + str(self.node_id))
             self.node_id=self.node_id+1        
 
     def handle_endtag(self, tag):
-        key=f'>{tag}'
+        key=f'>'
         self.elements.append( HtmlNodeInfo(key,self.node_id,None))       
-        print("Encountered a end tag:" + tag + "," + str(self.node_id))
+        # print("Encountered a end tag:" + tag + "," + str(self.node_id))
 
         self.node_id=self.node_id+1
 
     def handle_data(self, data):
         self.elements.append( HtmlNodeInfo("",self.node_id,data))
 
-        print("Encountered data:" + str(self.node_id) + "," + data)
+        # print("Encountered data:" + str(self.node_id) + "," + data)
         
         self.node_id=self.node_id+1
 
@@ -68,8 +68,6 @@ mappings = []
 parser = MyHTMLParser(mappings,0)
 
 dom_text=dom.text
-
-# dom_text="<body>test<br/><p>ptest</p></body>"
 
 parser.feed(dom_text)
 
@@ -111,27 +109,30 @@ for item in final_list:
     pprint( str(item.id) + "," + str(item.parent_id) + "," + item.start )
 
 
-# parents=sorted(list(set([ p.parent_id for p in final_list  ])))
-# print(parents) 
+print("####  Parents  #####")
+parents=sorted(list(set([ p.parent_id for p in final_list  ])))
+print(parents) 
 
-# childs=sorted(list(set([ p.id for p in final_list  ])))
-# print(childs) 
+print("####  Childs  #####")
+childs=sorted(list(set([ p.id for p in final_list  ])))
+print(childs) 
 
+t=Tree()
+n=NodeInfo(final_list[0].start,None,NodeType.ROOT,f'{final_list[0].start}_{final_list[0].id}') 
+t.add_node(n,None)
 
-# t=Tree()
-# n=NodeInfo(final_list[0].start,None,NodeType.ROOT) 
-# t.add_node(n,None)
+for item in final_list[1:10]:
+    # Get this items parent
+    parent=final_list[item.parent_id]
+    uniq_name=f'{parent.start}_{parent.id}'
+    parent_node= t.get_node_by_uniq(uniq_name)
 
-# for item in final_list[1:]:
-#     # Get this items parent
-#     parent=final_list[item.parent_id]
-#     parent_node= t.get_node(parent.start)
+    # Create child node
+    cn_uniq_name=f'{item.start}_{item.id}'
+    cn=NodeInfo(item.start,None,None,cn_uniq_name) 
 
-#     # Create child node
-#     cn=NodeInfo(item.start,None,None) 
+    # Add to tree
+    t.add_node(cn,parent_node)
 
-#     # Add to tree
-#     t.add_node(cn,parent_node)
-
-# t.plot_tree()
+t.plot_tree()
 # # dom_text="<div>test<br/><p>ptest</p></div>"
