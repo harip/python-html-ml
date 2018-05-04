@@ -33,7 +33,12 @@ class MyHTMLParser(HTMLParser):
         print("Encountered a start tag:" + tag + "," + str(self.node_id))
         self.node_id=self.node_id+1
 
-        if (tag.lower()=="link" or tag.lower()=="meta"):
+        if (    tag.lower()=="link" or 
+                tag.lower()=="meta" or 
+                tag.lower()=="br" or 
+                tag.lower()=="img" or
+                tag.lower()=="input"
+        ):
             #There is no end, so lets add one
             key=f'>{tag}'
             self.elements.append( HtmlNodeInfo(key,self.node_id,None))
@@ -69,8 +74,7 @@ dom_text=dom.text
 parser.feed(dom_text)
 
 elements=parser.get_elements()
-
-
+ 
 final_list=[]
 stack=Stack()
 for elem in elements:
