@@ -28,16 +28,16 @@ class MyHTMLParser(HTMLParser):
         
     def handle_starttag(self, tag, attrs):
         key=f'<{tag}'
-        self.elements.append( HtmlNodeInfo(key,self.node_id+1,None))
+        self.elements.append( HtmlNodeInfo(key,self.node_id,None))
         self.node_id=self.node_id+1
 
     def handle_endtag(self, tag):
         key=">"
-        self.elements.append( HtmlNodeInfo(key,self.node_id+1,None))
+        self.elements.append( HtmlNodeInfo(key,self.node_id,None))
         self.node_id=self.node_id+1
 
     def handle_data(self, data):
-        self.elements.append( HtmlNodeInfo("",self.node_id+1,data))
+        self.elements.append( HtmlNodeInfo("",self.node_id,data))
         self.node_id=self.node_id+1
 
     def get_elements(self):
@@ -48,9 +48,15 @@ dom=requests.get("https://www.google.com/")
 # mappings = OrderedDict()
 mappings = []
 parser = MyHTMLParser(mappings,0)
-parser.feed(dom.text)
+
+dom_text=dom.text
+
+dom_text="<p><br/></p>"
+
+parser.feed(dom_text)
 
 elements=parser.get_elements()
+
 final_list=[]
 stack=Stack()
 for elem in elements:
@@ -63,17 +69,21 @@ for elem in elements:
         pop_elem=stack.pop()
 
         # Get the data
-        data_index=elem.index-2
-        data_node=elements[data_index]
+        data=None
+        if (elem.index-pop_elem.index)>1:
+            # The data for this element is in between elem and pop_elem
+            data_index=elem.index-2
+            data=elements[data_index].data
 
         # Get the parent id
-        parent_index=pop_elem.index-2
+        parent_index=pop_elem.index-1
         parent_elem=elements[parent_index]
 
         key=f'{pop_elem.key}{elem.key}'
-        node=HtmlNode(key,data_node.data,parent_elem.index,parent_index)  
+        node=HtmlNode(key,data,pop_elem.index,parent_elem.index)  
         final_list.append(node)
 
+pprint( "item_id,parent_id,item" )
 for item in final_list:
     pprint( str(item.id) + "," + str(item.parent_id) + "," + item.start )
 
