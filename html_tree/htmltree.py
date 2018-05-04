@@ -63,7 +63,7 @@ class MyHTMLParser(HTMLParser):
         return self.elements
 
 
-dom=requests.get("https://www.google.com/")
+dom=requests.get("https://www.argusobservations.com")
 mappings = []
 parser = MyHTMLParser(mappings,0)
 
@@ -121,9 +121,9 @@ t=Tree()
 n=NodeInfo(final_list[0].start,None,NodeType.ROOT,f'{final_list[0].start}_{final_list[0].id}') 
 t.add_node(n,None)
 
-for item in final_list[1:10]:
+for item in final_list:
     # Get this items parent
-    parent=final_list[item.parent_id]
+    parent= next(p for p in final_list if p.id==item.parent_id)
     uniq_name=f'{parent.start}_{parent.id}'
     parent_node= t.get_node_by_uniq(uniq_name)
 
