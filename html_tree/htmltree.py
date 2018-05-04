@@ -51,7 +51,7 @@ parser = MyHTMLParser(mappings,0)
 
 dom_text=dom.text
 
-dom_text="<p><br/></p>"
+dom_text="<div>test<br/><p>ptest</p></div>"
 
 parser.feed(dom_text)
 
@@ -69,20 +69,30 @@ for elem in elements:
         pop_elem=stack.pop()
 
         # Get the data
-        data=None
+        data_node=[]
         if (elem.index-pop_elem.index)>1:
             # The data for this element is in between elem and pop_elem
-            data_index=elem.index-2
-            data=elements[data_index].data
+            # however filter for data is not None
+            datas_nodes=elements[pop_elem.index+1:elem.index]
+            data_node=[dn for dn in datas_nodes if dn.data is not None]
+        data=None if len(data_node)==0 else data_node[0]
 
         # Get the parent id
         parent_index=pop_elem.index-1
-        parent_elem=elements[parent_index]
+        parents= elements[parent_index::-1]
+        parent_elem_index=-1
+        for parent in parents:
+            if parent.data is None:
+                parent_elem_index=parent.index
+                break
+        
+        parent_elem_index= parent_elem_index if parent_elem_index>=0 else pop_elem.index
 
         key=f'{pop_elem.key}{elem.key}'
-        node=HtmlNode(key,data,pop_elem.index,parent_elem.index)  
+        node=HtmlNode(key,data,pop_elem.index,parent_elem_index)  
         final_list.append(node)
 
+final_list=sorted(final_list,key=lambda p: (p.parent_id,p.id))
 pprint( "item_id,parent_id,item" )
 for item in final_list:
     pprint( str(item.id) + "," + str(item.parent_id) + "," + item.start )
