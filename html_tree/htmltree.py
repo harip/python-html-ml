@@ -1,3 +1,4 @@
+import sys, os
 import requests
 from html.parser import HTMLParser
 from queue  import Queue
@@ -5,28 +6,30 @@ import uuid
 from stack import Stack
 from collections import OrderedDict
 from pprint import pprint
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 from tree_ds import Tree,NodeInfo,NodeType
 
 class HtmlNodeInfo:
-    def __init__(self,key,index,data):
-        self.key=key
-        self.index=index
-        self.data=data
+    def __init__(self, key, index, data):
+        self.key = key
+        self.index = index
+        self.data = data
 
 class HtmlNode:
-    def __init__(self,start,data,id,parent_id):
-        self.start=start
-        self.data=data        
-        self.id=id
-        self.parent_id=parent_id
+    def __init__(self, start, data, id, parent_id):
+        self.start = start
+        self.data = data
+        self.id = id
+        self.parent_id = parent_id
 
 # create a subclass and override the handler methods
 class MyHTMLParser(HTMLParser):
-    def __init__(self,elements,node_id):
+    def __init__(self, elements, node_id):
         HTMLParser.__init__(self)
-        self.elements=elements
-        self.node_id=node_id 
-        
+        self.elements = elements
+        self.node_id = node_id
+
     def handle_starttag(self, tag, attrs):
         key=f'<{tag}'
         self.elements.append( HtmlNodeInfo(key,self.node_id,None))
@@ -63,7 +66,7 @@ class MyHTMLParser(HTMLParser):
         return self.elements
 
 
-dom=requests.get("https://www.argusobservations.com")
+dom=requests.get("https://www.google.com")
 mappings = []
 parser = MyHTMLParser(mappings,0)
 
@@ -104,24 +107,15 @@ for elem in elements:
  
 
 final_list=sorted(final_list,key=lambda p: (p.parent_id,p.id))
-pprint( "item_id,parent_id,item" )
-for item in final_list:
-    pprint( str(item.id) + "," + str(item.parent_id) + "," + item.start )
-
-
-print("####  Parents  #####")
-parents=sorted(list(set([ p.parent_id for p in final_list  ])))
-print(parents) 
-
-print("####  Childs  #####")
-childs=sorted(list(set([ p.id for p in final_list  ])))
-print(childs) 
+# pprint( "item_id,parent_id,item" )
+# for item in final_list:
+#     pprint( str(item.id) + "," + str(item.parent_id) + "," + item.start )
 
 t=Tree()
 n=NodeInfo(final_list[0].start,None,NodeType.ROOT,f'{final_list[0].start}_{final_list[0].id}') 
 t.add_node(n,None)
 
-for item in final_list:
+for item in final_list[1:10]:
     # Get this items parent
     parent= next(p for p in final_list if p.id==item.parent_id)
     uniq_name=f'{parent.start}_{parent.id}'
@@ -135,4 +129,3 @@ for item in final_list:
     t.add_node(cn,parent_node)
 
 t.plot_tree()
-# # dom_text="<div>test<br/><p>ptest</p></div>"
