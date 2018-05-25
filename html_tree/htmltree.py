@@ -6,9 +6,7 @@ import uuid
 from stack import Stack
 from collections import OrderedDict
 from pprint import pprint
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
-from tree_ds import Tree,NodeInfo,NodeType
+from treeds import *
 
 class HtmlNodeInfo:
     def __init__(self, key, index, data):
