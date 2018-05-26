@@ -64,7 +64,7 @@ class MyHTMLParser(HTMLParser):
         return self.elements
 
 
-dom=requests.get("https://www.google.com")
+dom=requests.get("https://www.google.com/")
 mappings = []
 parser = MyHTMLParser(mappings,0)
 
@@ -73,6 +73,8 @@ dom_text=dom.text
 parser.feed(dom_text)
 
 elements=parser.get_elements()
+
+print(elements)
  
 final_list=[]
 stack=Stack()
@@ -113,7 +115,7 @@ t=Tree()
 n=NodeInfo(final_list[0].start,None,NodeType.ROOT,f'{final_list[0].start}_{final_list[0].id}') 
 t.add_node(n,None)
 
-for item in final_list[1:10]:
+for item in final_list:
     # Get this items parent
     parent= next(p for p in final_list if p.id==item.parent_id)
     uniq_name=f'{parent.start}_{parent.id}'
@@ -121,9 +123,14 @@ for item in final_list[1:10]:
 
     # Create child node
     cn_uniq_name=f'{item.start}_{item.id}'
-    cn=NodeInfo(item.start,None,None,cn_uniq_name) 
+    
+    node_data=""
+    if item.data is not None:
+        node_data=item.data.data
+    cn=NodeInfo(item.start,node_data,None,cn_uniq_name) 
 
     # Add to tree
     t.add_node(cn,parent_node)
 
-t.plot_tree()
+t.plot_tree({})
+t.export_tree_tocsv("nyctf.csv")
