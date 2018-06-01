@@ -31,8 +31,7 @@ class MyHTMLParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         key=f'<{tag}'
         self.elements.append( HtmlNodeInfo(key,self.node_id,None))
-        # print("Encountered a start tag:" + tag + "," + str(self.node_id))
-        self.node_id=self.node_id+1
+        self.node_id=self.node_id+1    
 
         if (    tag.lower()=="link" or 
                 tag.lower()=="meta" or 
@@ -44,38 +43,52 @@ class MyHTMLParser(HTMLParser):
             key=f'>'
             self.elements.append( HtmlNodeInfo(key,self.node_id,None))
             # print("Encountered a end tag:" + tag + "," + str(self.node_id))
-            self.node_id=self.node_id+1        
+            self.node_id=self.node_id+1       
 
     def handle_endtag(self, tag):
+
+        if (    tag.lower()=="link" or 
+                tag.lower()=="meta" or 
+                tag.lower()=="br" or 
+                tag.lower()=="img" or
+                tag.lower()=="input"
+        ):
+            return
+
         key=f'>'
         self.elements.append( HtmlNodeInfo(key,self.node_id,None))       
-        # print("Encountered a end tag:" + tag + "," + str(self.node_id))
-
         self.node_id=self.node_id+1
 
     def handle_data(self, data):
         self.elements.append( HtmlNodeInfo("",self.node_id,data))
+        self.node_id=self.node_id+1
 
-        # print("Encountered data:" + str(self.node_id) + "," + data)
-        
+    def handle_startendtag(self, tag, attrs):
+        # for <meta />        
+        key=f'<{tag}'
+        self.elements.append( HtmlNodeInfo(key,self.node_id,None))
+        self.node_id=self.node_id+1    
+
+        key=f'>'
+        self.elements.append( HtmlNodeInfo(key,self.node_id,None))       
         self.node_id=self.node_id+1
 
     def get_elements(self):
         return self.elements
 
-
-dom=requests.get("https://www.google.com/")
+dom=requests.get("https://nyctf.tt2beta.org/")
 mappings = []
 parser = MyHTMLParser(mappings,0)
-
 dom_text=dom.text
 
+# dom_text='<meta property="og:site_name" content="Yahoo" >'
 parser.feed(dom_text)
-
 elements=parser.get_elements()
 
-print(elements)
- 
+# print(elements)
+
+
+
 final_list=[]
 stack=Stack()
 for elem in elements:
@@ -107,9 +120,9 @@ for elem in elements:
  
 
 final_list=sorted(final_list,key=lambda p: (p.parent_id,p.id))
-# pprint( "item_id,parent_id,item" )
-# for item in final_list:
-#     pprint( str(item.id) + "," + str(item.parent_id) + "," + item.start )
+pprint( "item_id,parent_id,item" )
+for item in final_list:
+    pprint( str(item.id) + "," + str(item.parent_id) + "," + item.start )
 
 t=Tree()
 n=NodeInfo(final_list[0].start,None,NodeType.ROOT,f'{final_list[0].start}_{final_list[0].id}') 
@@ -132,5 +145,6 @@ for item in final_list:
     # Add to tree
     t.add_node(cn,parent_node)
 
+# t.plot_paths()
 t.plot_tree({})
-t.export_tree_tocsv("nyctf.csv")
+# t.export_tree_tocsv("nyctf.csv")
