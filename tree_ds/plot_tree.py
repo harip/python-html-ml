@@ -23,11 +23,11 @@ class PlotTree:
                                 start_loc[1],
                                 end_loc[0]-start_loc[0],
                                 end_loc[1]-start_loc[1],
-                                width=0.05)
+                                width=0.1)
 
     def set_mgrid(self):
         # Get number of paths, this will determine the width of the plot/grid
-        num_of_paths = len(self.tree.paths)
+        num_of_paths = len(self.tree.paths) 
 
         # Get the height of the tree, this will determine the height of the plot
         max_node_path = self.tree.height+1
@@ -55,7 +55,7 @@ class PlotTree:
     def set_plot(self):
         colors = np.linspace(0, 1, len(self.patches))
         collection = PatchCollection(self.patches, cmap=plt.cm.hsv, alpha=0.3)
-        collection.set_array(np.array(colors))
+        # collection.set_array(np.array(colors))
         self.ax.add_collection(collection)
         plt.axis('equal')
         plt.axis('off')
@@ -107,8 +107,9 @@ class PlotTree:
     def plot_tree(self, treeds):
         self.tree = treeds
         self.arrange_paths()        
-        self.set_mgrid()
-        node_w=0.2 
+        self.set_mgrid()        
+        node_h=0.5
+        node_w=2*node_h
         prev_node_loc_center=[]
  
         node_plot_pos_mod=self.get_node_plot_pos()
@@ -123,11 +124,11 @@ class PlotTree:
                 center_xy=[node_plot_pos_mod[node.id][0],node_plot_pos_mod[node.id][1] ]
 
                 if j not in plotted_node :
-                    ellipse = mpatches.Ellipse(center_xy, node_w, 0.1)
+                    ellipse = mpatches.Ellipse(center_xy, node_w, node_h,color='r')
                     self.patches.append(ellipse)            
                     self.label(center_xy, node.node_key)     
 
-                # # Draw arrow
+                # Draw arrow
                 if node_pos_in_path != 0:
                     arrow = self.get_arrow(prev_node_loc_center,center_xy)
                     self.patches.append(arrow)

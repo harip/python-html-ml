@@ -78,7 +78,7 @@ class MyHTMLParser(HTMLParser):
     def get_elements(self):
         return self.elements
 
-dom=requests.get("https://nyctf.tt2beta.org/")
+dom=requests.get("https://yahoo.com/")
 mappings = []
 parser = MyHTMLParser(mappings,0)
 dom_text=dom.text
@@ -143,6 +143,6 @@ for item in final_list:
     # Add to tree
     t.add_node(cn,parent_node)
 
-t.plot_paths()
-t.plot_tree({})
+# t.plot_paths()
+t.plot_tree({'show_grid':False})
 # t.export_tree_tocsv("nyctf.csv")
