@@ -1,0 +1,139 @@
+# https://matplotlib.org/gallery/shapes_and_collections/artist_reference.html?highlight=matplotlib%20pyplot%20hsv
+
+import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
+from matplotlib.collections import PatchCollection
+import numpy as np
+
+class PlotTree:
+    def __init__(self,config={}):
+        plt.rcdefaults()
+        self.fig, self.ax = plt.subplots()
+        self.grid = None
+        self.patches = []
+        self.tree = None
+        self.plotted = dict()
+        self.config=config
+
+    def label(self, label_xy, text):
+        plt.text(label_xy[0], label_xy[1], text, ha="center", family='sans-serif', size=9)
+
+    def get_arrow(self, start_loc, end_loc):
+        return mpatches.Arrow( start_loc[0],
+                                start_loc[1],
+                                end_loc[0]-start_loc[0],
+                                end_loc[1]-start_loc[1],
+                                width=0.05)
+
+    def set_mgrid(self):
+        # Get number of paths, this will determine the width of the plot/grid
+        num_of_paths = len(self.tree.paths)
+
+        # Get the height of the tree, this will determine the height of the plot
+        max_node_path = self.tree.height+1
+
+        # Create grid
+        grid_size_y = complex(0, max_node_path)
+        grid_size_x = complex(0, num_of_paths)
+ 
+        x = 0
+        y = num_of_paths*0.2
+        self.grid = np.mgrid[x:y:grid_size_x, x:y:grid_size_y].reshape(2, -1).T
+        self.grid = self.grid[::-1]
+
+        if "show_grid" in self.config and self.config["show_grid"]==True:
+            self.display_grid()
+
+    def display_grid(self):
+        plt.plot(self.grid[:,0], self.grid[:,1], 'ro')
+
+    def arrange_paths(self):
+        path_tuple=[(k,"-".join([self.tree.node_belongs_to_path[nv].Node.node_key for nv in v]))  for k,v in self.tree.paths.items()]
+        path_tuple=sorted(path_tuple,key=lambda x:x[1])
+        self.tree.paths=dict((tup[0],self.tree.paths[tup[0]]) for tup in path_tuple)
+
+    def set_plot(self):
+        colors = np.linspace(0, 1, len(self.patches))
+        collection = PatchCollection(self.patches, cmap=plt.cm.hsv, alpha=0.3)
+        collection.set_array(np.array(colors))
+        self.ax.add_collection(collection)
+        plt.axis('equal')
+        plt.axis('off')
+        plt.tight_layout()
+        plt.show()
+
+    def plot_paths(self,treeds):
+        self.plot_tree(treeds,True)
+
+    def plot_tree_v2(self, treeds,plot_paths=False):
+        self.tree = treeds
+        self.arrange_paths()        
+        self.set_mgrid()
+        node_w=0.2 
+        path_counter=0
+        path_node_counter=0
+        prev_node_loc=0
+
+        # iterate each height of the tree
+        for i in range(0,10):
+            # get all the paths that are atleast this height
+            paths_with_height_i=[k for k,v in self.tree.paths.items() if len(v) >= (i+1)]
+            
+            # get all the nodeids at this level
+            node_ids_at_height_i=[  self.tree.paths[k][i]  for k in paths_with_height_i ]
+
+            print(node_ids_at_height_i)
+
+        print(self.tree.height)
+
+
+    def plot_tree(self, treeds,plot_paths=False):
+        self.tree = treeds
+        self.arrange_paths()        
+        self.set_mgrid()
+        node_w=0.2 
+        path_counter=0
+        path_node_counter=0
+        prev_node_loc=0
+
+        plotted_node=dict()
+
+        # k is the key, path name
+        # v is the list of nodes in the path
+        for k,v in self.tree.paths.items():
+            node_pos_in_path=0
+            for j in v:              
+                
+                # This condition will take care of not plotting same node more than once
+                if j in plotted_node and plot_paths==False:
+                    prev_node_loc=plotted_node[j]
+                    path_node_counter=path_node_counter+1
+                    node_pos_in_path=node_pos_in_path+1
+                    continue                    
+
+                # Draw ellipse
+                ellipse = mpatches.Ellipse(self.grid[path_node_counter], node_w, 0.1)
+                self.patches.append(ellipse)
+
+                # Get text of node
+                node = self.tree.node_belongs_to_path[j].Node
+                self.label(self.grid[path_node_counter], node.node_key)
+
+                # Draw arrow
+                if node_pos_in_path != 0:
+                    arrow = self.get_arrow( self.grid[prev_node_loc],
+                                            self.grid[path_node_counter])
+                    self.patches.append(arrow)
+
+                # Make a note of which nodes have been plotted on the chart
+                plotted_node[j]=path_node_counter
+                prev_node_loc=path_node_counter
+                path_node_counter = path_node_counter+1
+                node_pos_in_path=node_pos_in_path+1                
+
+            # New path always starts from the top, all paths are not of same height
+            path_counter = path_counter+1
+            path_node_counter = (self.tree.height+1)*path_counter
+
+        self.set_plot()
+        

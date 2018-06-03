@@ -6,7 +6,9 @@ import uuid
 from stack import Stack
 from collections import OrderedDict
 from pprint import pprint
-from treeds import *
+
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from tree_ds import *
 
 class HtmlNodeInfo:
     def __init__(self, key, index, data):
@@ -30,7 +32,7 @@ class MyHTMLParser(HTMLParser):
 
     def handle_starttag(self, tag, attrs):
         key=f'<{tag}'
-        self.elements.append( HtmlNodeInfo(key,self.node_id,None))
+        self.elements.append( HtmlNodeInfo(key,self.node_id,attrs))
         self.node_id=self.node_id+1    
 
         if (    tag.lower()=="link" or 
@@ -41,7 +43,7 @@ class MyHTMLParser(HTMLParser):
         ):
             #There is no end, so lets add one
             key=f'>'
-            self.elements.append( HtmlNodeInfo(key,self.node_id,None))
+            self.elements.append( HtmlNodeInfo(key,self.node_id,attrs))
             # print("Encountered a end tag:" + tag + "," + str(self.node_id))
             self.node_id=self.node_id+1       
 
@@ -66,11 +68,11 @@ class MyHTMLParser(HTMLParser):
     def handle_startendtag(self, tag, attrs):
         # for <meta />        
         key=f'<{tag}'
-        self.elements.append( HtmlNodeInfo(key,self.node_id,None))
+        self.elements.append( HtmlNodeInfo(key,self.node_id,attrs))
         self.node_id=self.node_id+1    
 
         key=f'>'
-        self.elements.append( HtmlNodeInfo(key,self.node_id,None))       
+        self.elements.append( HtmlNodeInfo(key,self.node_id,attrs))       
         self.node_id=self.node_id+1
 
     def get_elements(self):
@@ -84,10 +86,6 @@ dom_text=dom.text
 # dom_text='<meta property="og:site_name" content="Yahoo" >'
 parser.feed(dom_text)
 elements=parser.get_elements()
-
-# print(elements)
-
-
 
 final_list=[]
 stack=Stack()
@@ -147,4 +145,5 @@ for item in final_list:
 
 # t.plot_paths()
 t.plot_tree({})
+t.plot_tree_v2({})
 # t.export_tree_tocsv("nyctf.csv")
