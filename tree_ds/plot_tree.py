@@ -104,7 +104,7 @@ class PlotTree:
                 
         return node_pos
 
-    def plot_tree_v2(self, treeds):
+    def plot_tree(self, treeds):
         self.tree = treeds
         self.arrange_paths()        
         self.set_mgrid()

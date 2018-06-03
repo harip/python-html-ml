@@ -71,9 +71,6 @@ class Tree:
     def plot_tree(self,config={}):
         pt.PlotTree(config).plot_tree(self)
 
-    def plot_tree_v2(self,config={}):
-        pt.PlotTree(config).plot_tree_v2(self)
-
     def plot_paths(self,config={}):
         pt.PlotTree(config).plot_paths(self)
 
