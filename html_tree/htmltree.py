@@ -118,9 +118,9 @@ for elem in elements:
  
 
 final_list=sorted(final_list,key=lambda p: (p.parent_id,p.id))
-pprint( "item_id,parent_id,item" )
-for item in final_list:
-    pprint( str(item.id) + "," + str(item.parent_id) + "," + item.start )
+# pprint( "item_id,parent_id,item" )
+# for item in final_list:
+#     pprint( str(item.id) + "," + str(item.parent_id) + "," + item.start )
 
 t=Tree()
 n=NodeInfo(final_list[0].start,None,NodeType.ROOT,f'{final_list[0].start}_{final_list[0].id}') 
@@ -144,6 +144,6 @@ for item in final_list:
     t.add_node(cn,parent_node)
 
 # t.plot_paths()
-t.plot_tree({})
+# t.plot_tree({})
 t.plot_tree_v2({})
 # t.export_tree_tocsv("nyctf.csv")
