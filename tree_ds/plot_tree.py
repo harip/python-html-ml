@@ -62,9 +62,6 @@ class PlotTree:
         plt.tight_layout()
         plt.show()
 
-    def plot_paths(self,treeds):
-        self.plot_tree(treeds,True)
-
     def get_node_plot_pos(self):
         path_counter=0
         path_node_counter=0
@@ -142,7 +139,7 @@ class PlotTree:
 
         self.set_plot()        
 
-    def plot_tree(self, treeds,plot_paths=False):
+    def plot_paths(self, treeds):
         self.tree = treeds
         self.arrange_paths()        
         self.set_mgrid()
@@ -158,13 +155,6 @@ class PlotTree:
         for k,v in self.tree.paths.items():
             node_pos_in_path=0
             for j in v:              
-                
-                # This condition will take care of not plotting same node more than once
-                if j in plotted_node and plot_paths==False:
-                    prev_node_loc=plotted_node[j]
-                    path_node_counter=path_node_counter+1
-                    node_pos_in_path=node_pos_in_path+1
-                    continue                    
 
                 # Draw ellipse
                 ellipse = mpatches.Ellipse(self.grid[path_node_counter], node_w, 0.1)

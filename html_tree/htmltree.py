@@ -143,7 +143,7 @@ for item in final_list:
     # Add to tree
     t.add_node(cn,parent_node)
 
-# t.plot_paths()
+t.plot_paths()
 # t.plot_tree({})
-t.plot_tree_v2({})
+# t.plot_tree_v2({})
 # t.export_tree_tocsv("nyctf.csv")
