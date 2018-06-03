@@ -2,7 +2,7 @@
 - refactor code - major
 - few bug fixes
 - further adjust node locations
-- include attribute information when exported the tree to csv
+- include attribute information when exporting the tree to csv
 - same elements should have same color
 
 
