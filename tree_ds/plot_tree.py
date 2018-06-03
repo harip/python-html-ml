@@ -124,8 +124,8 @@ class PlotTree:
                 center_xy=[node_plot_pos_mod[node.id][0],node_plot_pos_mod[node.id][1] ]
 
                 if j not in plotted_node :
-                    ellipse = mpatches.Ellipse(center_xy, node_w, node_h,color='r')
-                    self.patches.append(ellipse)            
+                    # ellipse = mpatches.Ellipse(center_xy, node_w, node_h,color='r')
+                    # self.patches.append(ellipse)            
                     self.label(center_xy, node.node_key)     
 
                 # Draw arrow

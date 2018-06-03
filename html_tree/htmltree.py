@@ -78,7 +78,7 @@ class MyHTMLParser(HTMLParser):
     def get_elements(self):
         return self.elements
 
-dom=requests.get("https://yahoo.com/")
+dom=requests.get("https://news.ycombinator.com/newest")
 mappings = []
 parser = MyHTMLParser(mappings,0)
 dom_text=dom.text
