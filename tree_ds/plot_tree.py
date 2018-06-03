@@ -112,9 +112,6 @@ class PlotTree:
         self.arrange_paths()        
         self.set_mgrid()
         node_w=0.2 
-        path_counter=0
-        path_node_counter=0
-        prev_node_loc=0
         prev_node_loc_center=[]
  
         node_plot_pos_mod=self.get_node_plot_pos()
@@ -124,34 +121,24 @@ class PlotTree:
         # v is the list of nodes in the path
         for k,v in self.tree.paths.items():
             node_pos_in_path=0
-            for j in v:              
+            for j in v:                           
                 node = self.tree.node_belongs_to_path[j].Node
+                center_xy=[node_plot_pos_mod[node.id][0],node_plot_pos_mod[node.id][1] ]
 
-                # Draw ellipse
-                # Get center of ellipse
-                center_xy=[ node_plot_pos_mod[node.id][0],node_plot_pos_mod[node.id][1] ]
-                print(center_xy)
-                ellipse = mpatches.Ellipse(center_xy, node_w, 0.1)
-                self.patches.append(ellipse)
-
-                # Get text of node                
-                self.label(center_xy, node.node_key)
+                if j not in plotted_node :
+                    ellipse = mpatches.Ellipse(center_xy, node_w, 0.1)
+                    self.patches.append(ellipse)            
+                    self.label(center_xy, node.node_key)     
 
                 # # Draw arrow
                 if node_pos_in_path != 0:
-                    arrow = self.get_arrow( prev_node_loc_center,center_xy)
+                    arrow = self.get_arrow(prev_node_loc_center,center_xy)
                     self.patches.append(arrow)
 
                 # Make a note of which nodes have been plotted on the chart
-                plotted_node[j]=path_node_counter
-                prev_node_loc=path_node_counter
+                plotted_node[j]=True 
                 prev_node_loc_center=center_xy
-                path_node_counter = path_node_counter+1
-                node_pos_in_path=node_pos_in_path+1                
-
-            # New path always starts from the top, all paths are not of same height
-            path_counter = path_counter+1
-            path_node_counter = (self.tree.height+1)*path_counter
+                node_pos_in_path=node_pos_in_path+1   
 
         self.set_plot()        
 
