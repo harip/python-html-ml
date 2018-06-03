@@ -48,7 +48,7 @@ class PlotTree:
         plt.plot(self.grid[:,0], self.grid[:,1], 'ro')
 
     def arrange_paths(self):
-        path_tuple=[(k,"-".join([self.tree.node_belongs_to_path[nv].Node.node_key for nv in v]))  for k,v in self.tree.paths.items()]
+        path_tuple=[(k,"-".join([self.tree.node_belongs_to_path[nv].Node.id for nv in v]))  for k,v in self.tree.paths.items()]
         path_tuple=sorted(path_tuple,key=lambda x:x[1])
         self.tree.paths=dict((tup[0],self.tree.paths[tup[0]]) for tup in path_tuple)
 
@@ -135,7 +135,7 @@ class PlotTree:
                 self.patches.append(ellipse)
 
                 # Get text of node                
-                # self.label(center_xy, node.node_key)
+                self.label(center_xy, node.node_key)
 
                 # # Draw arrow
                 if node_pos_in_path != 0:
